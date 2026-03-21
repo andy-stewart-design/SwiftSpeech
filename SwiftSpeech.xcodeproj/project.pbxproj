@@ -6,13 +6,30 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		797932912F6F46A100B4DBB8 /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = 797932902F6F46A100B4DBB8 /* WhisperKit */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		797932772F6F430A00B4DBB8 /* SwiftSpeech.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftSpeech.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		797932862F6F43E400B4DBB8 /* Exceptions for "SwiftSpeech" folder in "SwiftSpeech" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 797932762F6F430A00B4DBB8 /* SwiftSpeech */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		797932792F6F430A00B4DBB8 /* SwiftSpeech */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				797932862F6F43E400B4DBB8 /* Exceptions for "SwiftSpeech" folder in "SwiftSpeech" target */,
+			);
 			path = SwiftSpeech;
 			sourceTree = "<group>";
 		};
@@ -23,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				797932912F6F46A100B4DBB8 /* WhisperKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +83,7 @@
 			);
 			name = SwiftSpeech;
 			packageProductDependencies = (
+				797932902F6F46A100B4DBB8 /* WhisperKit */,
 			);
 			productName = SwiftSpeech;
 			productReference = 797932772F6F430A00B4DBB8 /* SwiftSpeech.app */;
@@ -94,6 +113,9 @@
 			);
 			mainGroup = 7979326E2F6F430A00B4DBB8;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				7979328F2F6F46A100B4DBB8 /* XCRemoteSwiftPackageReference "WhisperKit" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 797932782F6F430A00B4DBB8 /* Products */;
 			projectDirPath = "";
@@ -248,22 +270,26 @@
 		797932832F6F430B00B4DBB8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 2X4TDXURY2;
-				ENABLE_APP_SANDBOX = YES;
+				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SwiftSpeech/Info.plist;
+				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "$(PRODUCT_NAME) needs microphone access to record your voice.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = art.andystew.SwiftSpeech;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -280,22 +306,26 @@
 		797932842F6F430B00B4DBB8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 2X4TDXURY2;
-				ENABLE_APP_SANDBOX = YES;
+				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SwiftSpeech/Info.plist;
+				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "$(PRODUCT_NAME) needs microphone access to record your voice.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = art.andystew.SwiftSpeech;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -331,6 +361,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		7979328F2F6F46A100B4DBB8 /* XCRemoteSwiftPackageReference "WhisperKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/argmaxinc/WhisperKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		797932902F6F46A100B4DBB8 /* WhisperKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7979328F2F6F46A100B4DBB8 /* XCRemoteSwiftPackageReference "WhisperKit" */;
+			productName = WhisperKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7979326F2F6F430A00B4DBB8 /* Project object */;
 }

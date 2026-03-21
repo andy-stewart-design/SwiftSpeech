@@ -10,8 +10,9 @@ import SwiftUI
 @main
 struct SwiftSpeechApp: App {
     var body: some Scene {
-        WindowGroup {
+        MenuBarExtra("SwiftSpeech", systemImage: "mic") {
             ContentView()
         }
+        .menuBarExtraStyle(.menu)
     }
 }
