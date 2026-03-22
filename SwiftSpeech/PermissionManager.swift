@@ -1,4 +1,4 @@
-import Foundation
+import AppKit
 import ApplicationServices
 import AVFoundation
 
@@ -20,8 +20,10 @@ class PermissionManager {
             microphoneGranted = true
         case .notDetermined:
             microphoneGranted = await AVCaptureDevice.requestAccess(for: .audio)
+        case .denied, .restricted:
+            openMicrophoneSettings()
         default:
-            microphoneGranted = false
+            break
         }
     }
 
