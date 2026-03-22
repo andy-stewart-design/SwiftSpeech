@@ -9,10 +9,15 @@ import SwiftUI
 
 @main
 struct SwiftSpeechApp: App {
+    @State private var modelManager = ModelManager()
+
     var body: some Scene {
         MenuBarExtra("SwiftSpeech", systemImage: "mic") {
-            ContentView()
+            ContentView(modelManager: modelManager)
+                .task {
+                    await modelManager.prepare()
+                }
         }
-        .menuBarExtraStyle(.menu)
+        .menuBarExtraStyle(.window)
     }
 }
