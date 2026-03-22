@@ -41,6 +41,32 @@ struct ContentView: View {
     }
 
     @ViewBuilder
+    private var hotkeyRow: some View {
+        let hotkey = coordinator.hotkeyManager
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Hotkey")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text(hotkey.isCapturing ? "Press your hotkey…" : hotkey.displayString)
+                    .fontWeight(.medium)
+                    .foregroundStyle(hotkey.isCapturing ? .secondary : .primary)
+            }
+            Spacer()
+            Button(hotkey.isCapturing ? "Cancel" : "Change") {
+                if hotkey.isCapturing {
+                    hotkey.isCapturing = false
+                } else {
+                    hotkey.startCapturing()
+                }
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    @ViewBuilder
     private var readyContent: some View {
         if !permissionManager.accessibilityGranted {
             permissionView(
@@ -72,6 +98,8 @@ struct ContentView: View {
                     .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+            Divider()
+            hotkeyRow
             Divider()
             Button("Quit") { NSApplication.shared.terminate(nil) }
                 .buttonStyle(.plain)
