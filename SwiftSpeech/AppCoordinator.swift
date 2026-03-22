@@ -4,10 +4,11 @@ import WhisperKit
 @MainActor
 @Observable
 class AppCoordinator {
-    let modelManager    = ModelManager()
+    let modelManager      = ModelManager()
     let permissionManager = PermissionManager()
-    let hotkeyManager   = HotkeyManager()
-    let audioRecorder   = AudioRecorder()
+    let hotkeyManager     = HotkeyManager()
+    let audioRecorder     = AudioRecorder()
+    private(set) var lastTranscription: String? = nil
 
     init() {
         Task { await setup() }
@@ -40,6 +41,7 @@ class AppCoordinator {
             let results = try await whisperKit.transcribe(audioPath: audioURL.path)
             let text = results.map(\.text).joined().trimmingCharacters(in: .whitespacesAndNewlines)
             guard !text.isEmpty else { return }
+            lastTranscription = text
             Clipboard.paste(text + " ")
         } catch {
             print("Transcription error: \(error)")

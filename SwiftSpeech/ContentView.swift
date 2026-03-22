@@ -4,6 +4,7 @@ import WhisperKit
 
 struct ContentView: View {
     var coordinator: AppCoordinator
+    @Environment(\.dismiss) private var dismiss
 
     private var modelManager: ModelManager { coordinator.modelManager }
     private var permissionManager: PermissionManager { coordinator.permissionManager }
@@ -43,7 +44,7 @@ struct ContentView: View {
     @ViewBuilder
     private var hotkeyRow: some View {
         let hotkey = coordinator.hotkeyManager
-        HStack {
+        HStack(alignment: .bottom) {
             VStack(alignment: .leading, spacing: 2) {
                 Text("Hotkey")
                     .font(.caption)
@@ -101,6 +102,16 @@ struct ContentView: View {
             Divider()
             hotkeyRow
             Divider()
+            Button("Copy Last Transcription") {
+                if let last = coordinator.lastTranscription {
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(last, forType: .string)
+                    dismiss()
+                }
+            }
+            .buttonStyle(.plain)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .disabled(coordinator.lastTranscription == nil)
             Button("Quit") { NSApplication.shared.terminate(nil) }
                 .buttonStyle(.plain)
                 .frame(maxWidth: .infinity, alignment: .leading)
