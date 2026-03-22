@@ -1,5 +1,6 @@
 import AVFoundation
 import SwiftUI
+import WhisperKit
 
 struct ContentView: View {
     var coordinator: AppCoordinator
@@ -8,7 +9,7 @@ struct ContentView: View {
     private var permissionManager: PermissionManager { coordinator.permissionManager }
 
     var body: some View {
-        VStack(spacing: 12) {
+        VStack(alignment: .leading, spacing: 12) {
             switch modelManager.status {
             case .idle:
                 EmptyView()
@@ -63,11 +64,18 @@ struct ContentView: View {
                 secondaryAction: { NSApplication.shared.terminate(nil) }
             )
         } else {
-            Text("Ready")
-                .fontWeight(.medium)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Ready")
+                    .fontWeight(.medium)
+                Text("whisper-\(modelManager.whisperKit.map { String(describing: $0.modelVariant) } ?? "base.en")")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
             Divider()
             Button("Quit") { NSApplication.shared.terminate(nil) }
                 .buttonStyle(.plain)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 

@@ -39,7 +39,8 @@ class AppCoordinator {
         do {
             let results = try await whisperKit.transcribe(audioPath: audioURL.path)
             let text = results.map(\.text).joined().trimmingCharacters(in: .whitespacesAndNewlines)
-            print("Transcription: \(text)")
+            guard !text.isEmpty else { return }
+            Clipboard.paste(text + " ")
         } catch {
             print("Transcription error: \(error)")
         }
