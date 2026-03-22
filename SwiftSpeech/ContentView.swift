@@ -2,8 +2,10 @@ import AVFoundation
 import SwiftUI
 
 struct ContentView: View {
-    var modelManager: ModelManager
-    var permissionManager: PermissionManager
+    var coordinator: AppCoordinator
+
+    private var modelManager: ModelManager { coordinator.modelManager }
+    private var permissionManager: PermissionManager { coordinator.permissionManager }
 
     var body: some View {
         VStack(spacing: 12) {

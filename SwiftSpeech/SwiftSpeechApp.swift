@@ -9,16 +9,13 @@ import SwiftUI
 
 @main
 struct SwiftSpeechApp: App {
-    @State private var modelManager = ModelManager()
-    @State private var permissionManager = PermissionManager()
+    @State private var coordinator = AppCoordinator()
 
     var body: some Scene {
         MenuBarExtra("SwiftSpeech", systemImage: "mic") {
-            ContentView(modelManager: modelManager, permissionManager: permissionManager)
-                .task {
-                    await modelManager.prepare()
-                    permissionManager.checkAccessibility()
-                    await permissionManager.requestMicrophone()
+            ContentView(coordinator: coordinator)
+                .onChange(of: coordinator.permissionManager.allGranted) { _, granted in
+                    if granted { coordinator.startHotkey() }
                 }
         }
         .menuBarExtraStyle(.window)
