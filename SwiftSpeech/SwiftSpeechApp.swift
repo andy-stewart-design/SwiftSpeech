@@ -12,7 +12,7 @@ struct SwiftSpeechApp: App {
     @State private var coordinator = AppCoordinator()
 
     var body: some Scene {
-        MenuBarExtra("SwiftSpeech", systemImage: "mic") {
+        MenuBarExtra("SwiftSpeech", systemImage: coordinator.hotkeyManager.isRecording ? "mic.fill" : "mic") {
             ContentView(coordinator: coordinator)
                 .onChange(of: coordinator.permissionManager.allGranted) { _, granted in
                     if granted { coordinator.startHotkey() }

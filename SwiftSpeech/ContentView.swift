@@ -67,7 +67,7 @@ struct ContentView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text("Ready")
                     .fontWeight(.medium)
-                Text("whisper-\(modelManager.whisperKit.map { String(describing: $0.modelVariant) } ?? "base.en")")
+                Text("whisper-\(modelManager.modelVariantDescription)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
