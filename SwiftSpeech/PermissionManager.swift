@@ -14,6 +14,17 @@ class PermissionManager {
         accessibilityGranted = AXIsProcessTrusted()
     }
 
+    func checkMicrophone() {
+        microphoneGranted = AVCaptureDevice.authorizationStatus(for: .audio) == .authorized
+    }
+
+    /// Triggers the macOS system prompt ("SwiftSpeech would like to control your computer"),
+    /// which adds the app to the Accessibility list in System Settings so the user can enable it.
+    func requestAccessibility() {
+        let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true] as CFDictionary
+        accessibilityGranted = AXIsProcessTrustedWithOptions(options)
+    }
+
     func requestMicrophone() async {
         switch AVCaptureDevice.authorizationStatus(for: .audio) {
         case .authorized:

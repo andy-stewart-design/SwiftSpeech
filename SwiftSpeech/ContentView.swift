@@ -13,7 +13,12 @@ struct ContentView: View {
         VStack(alignment: .leading, spacing: 12) {
             switch modelManager.status {
             case .idle:
-                EmptyView()
+                if !coordinator.onboardingComplete {
+                    Button("Open Setup") { coordinator.showOnboardingWindow() }
+                        .buttonStyle(.borderedProminent)
+                } else {
+                    ProgressView("Loading…")
+                }
 
             case .downloading:
                 ProgressView("Downloading model…")

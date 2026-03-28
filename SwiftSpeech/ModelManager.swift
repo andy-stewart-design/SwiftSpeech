@@ -13,17 +13,30 @@ class ModelManager {
     }
 
     var status: Status = .idle
+    var downloadProgress: Double = 0.0
+    private(set) var selectedModel: String = UserDefaults.standard.string(forKey: "app.selectedModel") ?? "base.en"
     private(set) var whisperKit: WhisperKit?
-    private let modelName = "base.en"
-    var modelVariantDescription: String { modelName }
+
+    var modelVariantDescription: String { selectedModel }
 
     func prepare() async {
-        guard status == .idle else { return }
+        await downloadAndLoad(modelName: selectedModel)
+    }
+
+    func downloadAndLoad(modelName: String) async {
+        guard status != .downloading && status != .loading else { return }
         status = .downloading
+        downloadProgress = 0.0
         do {
-            // WhisperKit checks local cache first — only downloads if needed
-            let kit = try await WhisperKit(model: modelName)
+            let folder = try await WhisperKit.download(variant: modelName) { [weak self] p in
+                Task { @MainActor [weak self] in
+                    self?.downloadProgress = p.fractionCompleted
+                }
+            }
             status = .loading
+            let kit = try await WhisperKit(model: modelName, modelFolder: folder.path)
+            selectedModel = modelName
+            UserDefaults.standard.set(modelName, forKey: "app.selectedModel")
             whisperKit = kit
             status = .ready
         } catch {

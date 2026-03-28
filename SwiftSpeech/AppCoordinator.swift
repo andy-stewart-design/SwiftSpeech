@@ -1,4 +1,6 @@
+import AppKit
 import Foundation
+import SwiftUI
 import WhisperKit
 
 @MainActor
@@ -9,18 +11,49 @@ class AppCoordinator {
     let hotkeyManager     = HotkeyManager()
     let audioRecorder     = AudioRecorder()
     private(set) var lastTranscription: String? = nil
+    private(set) var onboardingComplete: Bool = UserDefaults.standard.bool(forKey: "app.onboardingComplete")
+    private var onboardingWindow: NSWindow?
 
     init() {
         Task { await setup() }
     }
 
     private func setup() async {
-        await modelManager.prepare()
-        permissionManager.checkAccessibility()
-        await permissionManager.requestMicrophone()
-        if permissionManager.allGranted {
-            startHotkey()
+        if onboardingComplete {
+            await modelManager.prepare()
+            permissionManager.checkAccessibility()
+            await permissionManager.requestMicrophone()
+            if permissionManager.allGranted {
+                startHotkey()
+            }
+        } else {
+            showOnboardingWindow()
         }
+    }
+
+    func showOnboardingWindow() {
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 420, height: 440),
+            styleMask: [.titled, .closable],
+            backing: .buffered,
+            defer: false
+        )
+        window.title = "Welcome to SwiftSpeech"
+        window.contentView = NSHostingView(rootView: OnboardingView(coordinator: self))
+        window.isReleasedWhenClosed = false
+        window.center()
+        onboardingWindow = window
+        // orderFrontRegardless is required for LSUIElement (menu-bar-only) apps —
+        // makeKeyAndOrderFront + activate don't reliably bring windows forward without a Dock presence.
+        window.orderFrontRegardless()
+    }
+
+    func completeOnboarding() {
+        UserDefaults.standard.set(true, forKey: "app.onboardingComplete")
+        onboardingComplete = true
+        onboardingWindow?.close()
+        onboardingWindow = nil
+        startHotkey()
     }
 
     func startHotkey() {
