@@ -79,7 +79,9 @@ class HotkeyManager {
     }
 
     func startCapturing() {
-        isCapturing = true
+        pendingKeyCode = 0
+        pendingFlags   = []
+        isCapturing    = true
     }
 
     // MARK: - Private

@@ -13,6 +13,7 @@ class AppCoordinator {
     private(set) var lastTranscription: String? = nil
     private(set) var onboardingComplete: Bool = UserDefaults.standard.bool(forKey: "app.onboardingComplete")
     private var onboardingWindow: NSWindow?
+    private var hotkeyWindow: NSWindow?
 
     init() {
         Task { await setup() }
@@ -48,6 +49,25 @@ class AppCoordinator {
         window.orderFrontRegardless()
     }
 
+    func showHotkeyWindow() {
+        guard hotkeyWindow == nil else { hotkeyWindow?.orderFrontRegardless(); return }
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 280, height: 160),
+            styleMask: [.titled, .closable],
+            backing: .buffered,
+            defer: false
+        )
+        window.title = "Change Hotkey"
+        window.contentView = NSHostingView(rootView: HotkeyCaptureView(hotkeyManager: hotkeyManager) { [weak self] in
+            self?.hotkeyWindow?.close()
+            self?.hotkeyWindow = nil
+        })
+        window.isReleasedWhenClosed = false
+        window.center()
+        hotkeyWindow = window
+        window.orderFrontRegardless()
+    }
+
     func completeOnboarding() {
         UserDefaults.standard.set(true, forKey: "app.onboardingComplete")
         onboardingComplete = true
@@ -72,7 +92,10 @@ class AppCoordinator {
         guard let whisperKit = modelManager.whisperKit else { return }
         do {
             let results = try await whisperKit.transcribe(audioPath: audioURL.path)
-            let text = results.map(\.text).joined().trimmingCharacters(in: .whitespacesAndNewlines)
+            let raw = results.map(\.text).joined()
+            let text = raw
+                .replacing(#/\[.+?\]/#, with: "")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
             guard !text.isEmpty else { return }
             lastTranscription = text
             Clipboard.paste(text + " ")
