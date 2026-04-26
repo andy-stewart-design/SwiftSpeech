@@ -13,6 +13,7 @@ class AppCoordinator {
     private(set) var lastTranscription: String? = nil
     private(set) var onboardingComplete: Bool = UserDefaults.standard.bool(forKey: "app.onboardingComplete")
     private var onboardingWindow: NSWindow?
+    private var hotkeyWindow: NSWindow?
 
     init() {
         Task { await setup() }
@@ -45,6 +46,25 @@ class AppCoordinator {
         onboardingWindow = window
         // orderFrontRegardless is required for LSUIElement (menu-bar-only) apps —
         // makeKeyAndOrderFront + activate don't reliably bring windows forward without a Dock presence.
+        window.orderFrontRegardless()
+    }
+
+    func showHotkeyWindow() {
+        guard hotkeyWindow == nil else { hotkeyWindow?.orderFrontRegardless(); return }
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 280, height: 160),
+            styleMask: [.titled, .closable],
+            backing: .buffered,
+            defer: false
+        )
+        window.title = "Change Hotkey"
+        window.contentView = NSHostingView(rootView: HotkeyCaptureView(hotkeyManager: hotkeyManager) { [weak self] in
+            self?.hotkeyWindow?.close()
+            self?.hotkeyWindow = nil
+        })
+        window.isReleasedWhenClosed = false
+        window.center()
+        hotkeyWindow = window
         window.orderFrontRegardless()
     }
 

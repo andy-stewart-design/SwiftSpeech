@@ -23,6 +23,7 @@ class ModelManager {
     var downloadProgress: Double = 0.0
     private(set) var selectedModel: String = UserDefaults.standard.string(forKey: "app.selectedModel") ?? "base.en"
     private(set) var whisperKit: WhisperKit?
+    private(set) var isSwitching = false
     private var currentModelFolder: URL?
 
     var modelVariantDescription: String { selectedModel }
@@ -56,8 +57,10 @@ class ModelManager {
     func switchModel(to modelName: String) async {
         guard modelName != selectedModel else { return }
         let oldFolder = currentModelFolder
+        isSwitching = true
         whisperKit = nil
         await downloadAndLoad(modelName: modelName)
+        isSwitching = false
         if status == .ready, let folder = oldFolder {
             try? FileManager.default.removeItem(at: folder)
         }
