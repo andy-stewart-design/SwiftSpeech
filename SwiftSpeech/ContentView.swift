@@ -148,6 +148,12 @@ struct HotkeyCaptureView: View {
                 .keyboardShortcut(.escape)
 
                 if captured {
+                    Button("Try Again") {
+                        captured = false
+                        cancelling = false
+                        hotkeyManager.startCapturing()
+                    }
+
                     Button("Save") { onDone() }
                         .keyboardShortcut(.return)
                 }
@@ -158,7 +164,11 @@ struct HotkeyCaptureView: View {
         .onAppear {
             savedKeyCode = hotkeyManager.keyCode
             savedFlags = hotkeyManager.requiredFlags
-            hotkeyManager.startCapturing()
+            // Delay prevents accidental capture of modifier keys still held
+            // from clicking the menu item that opened this window.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                hotkeyManager.startCapturing()
+            }
         }
         .onChange(of: hotkeyManager.isCapturing) { _, capturing in
             if !capturing && !cancelling { captured = true }
