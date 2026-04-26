@@ -72,7 +72,10 @@ class AppCoordinator {
         guard let whisperKit = modelManager.whisperKit else { return }
         do {
             let results = try await whisperKit.transcribe(audioPath: audioURL.path)
-            let text = results.map(\.text).joined().trimmingCharacters(in: .whitespacesAndNewlines)
+            let raw = results.map(\.text).joined()
+            let text = raw
+                .replacing(#/\[.+?\]/#, with: "")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
             guard !text.isEmpty else { return }
             lastTranscription = text
             Clipboard.paste(text + " ")
