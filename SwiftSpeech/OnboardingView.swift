@@ -9,11 +9,7 @@ struct OnboardingView: View {
     private var permissionManager: PermissionManager { coordinator.permissionManager }
     private var modelManager: ModelManager { coordinator.modelManager }
 
-    private let models: [(name: String, description: String, size: String)] = [
-        ("tiny.en",  "Fastest, less accurate",  "~40 MB"),
-        ("base.en",  "Balanced",                 "~140 MB"),
-        ("small.en", "Most accurate, slower",    "~466 MB"),
-    ]
+    private let models = ModelManager.models
 
     var body: some View {
         VStack(spacing: 0) {

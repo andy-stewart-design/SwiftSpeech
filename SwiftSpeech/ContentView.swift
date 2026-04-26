@@ -73,6 +73,52 @@ struct ContentView: View {
     }
 
     @ViewBuilder
+    private var modelRow: some View {
+        HStack(alignment: .bottom) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Model")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                switch modelManager.status {
+                case .downloading:
+                    Text("Downloading… \(Int(modelManager.downloadProgress * 100))%")
+                        .fontWeight(.medium)
+                        .foregroundStyle(.secondary)
+                case .loading:
+                    Text("Loading…")
+                        .fontWeight(.medium)
+                        .foregroundStyle(.secondary)
+                default:
+                    Text(modelManager.selectedModel)
+                        .fontWeight(.medium)
+                }
+            }
+            Spacer()
+            if modelManager.status == .ready {
+                Menu {
+                    ForEach(ModelManager.models, id: \.name) { m in
+                        Button {
+                            Task { await modelManager.switchModel(to: m.name) }
+                        } label: {
+                            if modelManager.selectedModel == m.name {
+                                Label(m.name, systemImage: "checkmark")
+                            } else {
+                                Text(m.name)
+                            }
+                        }
+                    }
+                } label: {
+                    Text("Change")
+                }
+                .menuStyle(.button)
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    @ViewBuilder
     private var readyContent: some View {
         if !permissionManager.accessibilityGranted {
             permissionView(
@@ -106,6 +152,8 @@ struct ContentView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             Divider()
             hotkeyRow
+            Divider()
+            modelRow
             Divider()
             Button("Copy Last Transcription") {
                 if let last = coordinator.lastTranscription {
