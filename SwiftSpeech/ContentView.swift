@@ -44,7 +44,14 @@ struct ContentView: View {
     @ViewBuilder
     private var statusSection: some View {
         if modelManager.isSwitching {
-            Text("Switching model…")
+            switch modelManager.status {
+            case .downloading:
+                Text("Downloading… \(Int(modelManager.downloadProgress * 100))%")
+            case .loading:
+                Text("Loading model…")
+            default:
+                Text("Switching model…")
+            }
             Divider()
         } else {
             switch modelManager.status {

@@ -11,6 +11,7 @@ class AppCoordinator {
     let hotkeyManager     = HotkeyManager()
     let audioRecorder     = AudioRecorder()
     private(set) var lastTranscription: String? = nil
+    private(set) var isTranscribing = false
     private(set) var onboardingComplete: Bool = UserDefaults.standard.bool(forKey: "app.onboardingComplete")
     private var onboardingWindow: NSWindow?
     private var hotkeyWindow: NSWindow?
@@ -90,6 +91,8 @@ class AppCoordinator {
 
     private func transcribe(audioURL: URL) async {
         guard let whisperKit = modelManager.whisperKit else { return }
+        isTranscribing = true
+        defer { isTranscribing = false }
         do {
             let results = try await whisperKit.transcribe(audioPath: audioURL.path)
             let raw = results.map(\.text).joined()
