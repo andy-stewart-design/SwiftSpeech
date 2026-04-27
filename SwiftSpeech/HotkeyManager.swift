@@ -36,10 +36,11 @@ class HotkeyManager {
         return parts.joined()
     }
 
-    private var eventTap:       CFMachPort?
-    private var runLoopSource:  CFRunLoopSource?
-    private var pendingKeyCode: Int64 = 0
-    private var pendingFlags:   CGEventFlags = []
+    private var eventTap:         CFMachPort?
+    private var runLoopSource:    CFRunLoopSource?
+    private var pendingKeyCode:   Int64 = 0
+    private var pendingFlags:     CGEventFlags = []
+    private var recordingStartedAt: Date?
 
     func start() {
         print("HotkeyManager.start() called")
@@ -115,10 +116,17 @@ class HotkeyManager {
 
         if activeFlags == requiredFlags, !isRecording {
             isRecording = true
+            recordingStartedAt = Date()
             onKeyDown?()
             return nil
         } else if isRecording, !activeFlags.isSuperset(of: requiredFlags) {
+            // Ignore spurious key-up events within 150ms of starting — newer macOS
+            // versions can fire intermediate flagsChanged events where a flag
+            // briefly drops out, which would otherwise stop recording immediately.
+            guard let startedAt = recordingStartedAt,
+                  Date().timeIntervalSince(startedAt) >= 0.15 else { return nil }
             isRecording = false
+            recordingStartedAt = nil
             onKeyUp?()
             return nil
         }

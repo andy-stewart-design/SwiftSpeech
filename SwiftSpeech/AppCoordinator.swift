@@ -52,7 +52,7 @@ class AppCoordinator {
     func showHotkeyWindow() {
         guard hotkeyWindow == nil else { hotkeyWindow?.orderFrontRegardless(); return }
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 280, height: 160),
+            contentRect: NSRect(x: 0, y: 0, width: 320, height: 130),
             styleMask: [.titled, .closable],
             backing: .buffered,
             defer: false

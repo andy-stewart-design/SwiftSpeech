@@ -116,62 +116,72 @@ struct HotkeyCaptureView: View {
 
     @State private var savedKeyCode: Int64 = 0
     @State private var savedFlags: CGEventFlags = []
-    @State private var captured = false
-    @State private var cancelling = false
+    @State private var dismissing = false
+
+    private var hasChanged: Bool {
+        hotkeyManager.keyCode != savedKeyCode || hotkeyManager.requiredFlags != savedFlags
+    }
 
     var body: some View {
-        VStack(spacing: 16) {
-            VStack(spacing: 4) {
-                Text(captured ? "New hotkey" : "Current hotkey")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Text(hotkeyManager.displayString)
+        VStack(spacing: 0) {
+            // Caption sits above on its own line
+            Text("Current hotkey")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 20)
+                .padding(.top, 20)
+                .padding(.bottom, 4)
+
+            // Hotkey text + Record button, vertically centered on the same row
+            HStack(alignment: .center) {
+                Text(hotkeyManager.isCapturing ? "Recording…" : hotkeyManager.displayString)
                     .font(.title2)
                     .fontWeight(.medium)
-            }
+                    .foregroundStyle(hotkeyManager.isCapturing ? .secondary : .primary)
 
-            if !captured {
-                Text("Press a new combination to replace it")
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-            }
+                Spacer()
 
-            HStack(spacing: 12) {
+                Button(hasChanged ? "Re-record" : "Record") {
+                    hotkeyManager.startCapturing()
+                }
+                .disabled(hotkeyManager.isCapturing)
+            }
+            .padding(.horizontal, 20)
+            .padding(.bottom, 16)
+
+            Divider()
+
+            // Bottom bar — same horizontal padding keeps Save's right edge
+            // aligned with Record's right edge above.
+            HStack {
+                Spacer()
                 Button("Cancel") {
-                    cancelling = true
+                    dismissing = true
+                    hotkeyManager.isCapturing = false
                     hotkeyManager.keyCode = savedKeyCode
                     hotkeyManager.requiredFlags = savedFlags
-                    hotkeyManager.isCapturing = false
                     onDone()
                 }
                 .keyboardShortcut(.escape)
 
-                if captured {
-                    Button("Try Again") {
-                        captured = false
-                        cancelling = false
-                        hotkeyManager.startCapturing()
-                    }
-
-                    Button("Save") { onDone() }
-                        .keyboardShortcut(.return)
-                }
+                Button("Save") { onDone() }
+                    .keyboardShortcut(.return)
+                    .buttonStyle(.borderedProminent)
+                    .disabled(!hasChanged)
             }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 12)
         }
-        .padding(24)
-        .frame(width: 280)
+        .frame(width: 320)
         .onAppear {
             savedKeyCode = hotkeyManager.keyCode
             savedFlags = hotkeyManager.requiredFlags
-            // Delay prevents accidental capture of modifier keys still held
-            // from clicking the menu item that opened this window.
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                hotkeyManager.startCapturing()
-            }
         }
         .onChange(of: hotkeyManager.isCapturing) { _, capturing in
-            if !capturing && !cancelling { captured = true }
+            if !capturing && !dismissing {
+                // Restore display string to reflect committed value
+            }
         }
     }
 }
