@@ -36,11 +36,15 @@ class HotkeyManager {
         return parts.joined()
     }
 
-    private var eventTap:         CFMachPort?
-    private var runLoopSource:    CFRunLoopSource?
-    private var pendingKeyCode:   Int64 = 0
-    private var pendingFlags:     CGEventFlags = []
+    private var eventTap:           CFMachPort?
+    private var runLoopSource:      CFRunLoopSource?
+    private var pendingKeyCode:     Int64 = 0
+    private var pendingFlags:       CGEventFlags = []
     private var recordingStartedAt: Date?
+    // Must see a full modifier release (activeFlags == []) before accepting
+    // the next key-down. Prevents spurious re-triggers from synthetic
+    // flagsChanged events injected by macOS after space/app switches.
+    private var readyToRecord = true
 
     func start() {
         print("HotkeyManager.start() called")
@@ -111,11 +115,18 @@ class HotkeyManager {
             return nil
         }
 
+        // A clean release of all modifiers resets the ready state.
+        // Checked before the keyCode guard so any flagsChanged event can arm it.
+        if activeFlags.isEmpty {
+            readyToRecord = true
+        }
+
         // Normal hotkey detection
         guard eventKeyCode == keyCode else { return Unmanaged.passUnretained(event) }
 
-        if activeFlags == requiredFlags, !isRecording {
+        if activeFlags == requiredFlags, !isRecording, readyToRecord {
             isRecording = true
+            readyToRecord = false
             recordingStartedAt = Date()
             onKeyDown?()
             return nil

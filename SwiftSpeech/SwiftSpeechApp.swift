@@ -19,7 +19,9 @@ struct SwiftSpeechApp: App {
         case .downloading, .loading:
             return "arrow.triangle.2.circlepath"
         case .ready:
-            return coordinator.hotkeyManager.isRecording ? "mic.fill" : "mic"
+            if case .recording = coordinator.audioRecorder.status { return "waveform" }
+            if coordinator.isTranscribing { return "ellipsis" }
+            return "mic"
         default:
             return "mic"
         }
